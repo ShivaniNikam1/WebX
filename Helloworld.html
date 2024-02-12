@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angularjs</title>
+</head>
+
+<body>
+    <div ng-app="app" ng-controller="Myctrler">
+        <h1>{{message}}</h1>
+    </div>
+    <script src="https://code.angularjs.org/1.6.9/angular.js"></script>
+    <script>
+        var app = angular.module('app', []);
+        app.controller('Myctrler', function ($scope) {
+            $scope.message = "Hello World!";
+        });
+    </script>
+
+</body>
+
+</html>

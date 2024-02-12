@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="studentApp">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Information Management System</title>
+  <style>
+    .form-container {
+      width: 300px;
+      margin: 20px auto;
+    }
+
+    .form-container label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-container input,
+    .form-container select {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    .form-container button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .form-container button:hover {
+      background-color: #0056b3;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 12px;
+    }
+
+    .gender-label {
+      margin-top: 10px;
+    }
+
+    .gender-options {
+      display: flex;
+    }
+
+    .gender-options label {
+      margin-right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div ng-controller="studentController" class="form-container">
+    <h2>Student Information Form</h2>
+    <form name="studentForm" novalidate>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" ng-model="student.name" ng-minlength="3" required>
+      <div class="error-message" ng-show="studentForm.name.$invalid && studentForm.name.$touched">
+        <span ng-show="studentForm.name.$error.required">Name is required.</span>
+        <span ng-show="studentForm.name.$error.minlength">Name must be at least 3 characters.</span>
+      </div>
+      <br>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" ng-model="student.email" required>
+      <div class="error-message" ng-show="studentForm.email.$invalid && studentForm.email.$touched">
+        <span ng-show="studentForm.email.$error.email">Invalid email address.</span>
+        <span ng-show="studentForm.email.$error.required">Email is required.</span>
+      </div>
+      <br>
+
+      <label for="birthdate">Birth Date:</label>
+      <input type="date" id="birthdate" name="birthdate" ng-model="student.birthdate" required>
+      <div class="error-message" ng-show="studentForm.birthdate.$invalid && studentForm.birthdate.$touched">
+        <span ng-show="studentForm.birthdate.$error.required">Birth Date is required.</span>
+      </div>
+      <br>
+
+      <div class="gender-label">Gender:</div>
+      <div class="gender-options">
+        <label><input type="radio" name="gender" ng-model="student.gender" value="male" required> Male</label>
+        <label><input type="radio" name="gender" ng-model="student.gender" value="female" required> Female</label>
+      </div>
+      <div class="error-message" ng-show="studentForm.gender.$invalid && studentForm.gender.$touched">
+        Gender is required.
+      </div>
+      <br>
+
+      <button ng-click="submitForm()" ng-disabled="studentForm.$invalid">Submit</button>
+      <button type="button" ng-click="clearForm()">Clear</button>
+    </form>
+
+    <div ng-show="submitted">
+      <h3>Student Details:</h3>
+      <p><strong>Name:</strong> {{ student.name }}</p>
+      <p><strong>Email:</strong> {{ student.email }}</p>
+      <p><strong>Birth Date:</strong> {{ student.birthdate }}</p>
+      <p><strong>Gender:</strong> {{ student.gender }}</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+  <script>
+    var app = angular.module('studentApp', []);
+
+    app.controller('studentController', function($scope) {
+      $scope.student = {};
+      $scope.submitted = false;
+
+      $scope.submitForm = function() {
+        $scope.submitted = true;
+        alert("Form submitted successfully!");
+      };
+
+      $scope.clearForm = function() {
+        $scope.student = {};
+        $scope.submitted = false;
+        $scope.studentForm.$setPristine();
+        $scope.studentForm.$setUntouched();
+      };
+    });
+  </script>
+
+</body>
+
+</html>
