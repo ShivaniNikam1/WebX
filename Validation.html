@@ -1,130 +1,226 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="studentApp">
+<html ng-app="expenseTrackerApp">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Information Management System</title>
+  <title>Expense Tracker</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <style>
-    .form-container {
-      width: 300px;
-      margin: 20px auto;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
     }
 
-    .form-container label {
-      display: block;
-      margin-bottom: 5px;
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 50px auto;
     }
 
-    .form-container input,
-    .form-container select {
-      width: 100%;
-      padding: 5px;
+    .form-row {
+      display: flex;
+      align-items: center;
       margin-bottom: 10px;
     }
 
-    .form-container button {
-      padding: 5px 10px;
-      background-color: #007bff;
-      color: white;
+    .form-row label {
+      margin-right: 10px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 200px;
+    }
+
+    button {
+      padding: 8px 16px;
       border: none;
+      border-radius: 4px;
+      background-color: #4caf50;
+      color: #ffffff;
+      font-size: 14px;
       cursor: pointer;
     }
 
-    .form-container button:hover {
-      background-color: #0056b3;
+    button:hover {
+      background-color: #45a049;
+      align-items: center;
     }
 
-    .error-message {
-      color: red;
-      font-size: 12px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
 
-    .gender-label {
-      margin-top: 10px;
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
     }
 
-    .gender-options {
+    th {
+      background-color: #f2f2f2;
+    }
+
+    ul {
+      padding: 0;
+      list-style-type: none;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    .balance-row {
       display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
     }
 
-    .gender-options label {
-      margin-right: 20px;
+    .balance-item {
+      flex: 1;
+      text-align: center;
     }
+    
   </style>
 </head>
 
 <body>
 
-  <div ng-controller="studentController" class="form-container">
-    <h2>Student Information Form</h2>
-    <form name="studentForm" novalidate>
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" ng-model="student.name" ng-minlength="3" required>
-      <div class="error-message" ng-show="studentForm.name.$invalid && studentForm.name.$touched">
-        <span ng-show="studentForm.name.$error.required">Name is required.</span>
-        <span ng-show="studentForm.name.$error.minlength">Name must be at least 3 characters.</span>
-      </div>
-      <br>
+  <div class="container" ng-controller="ExpenseController as expenseCtrl">
+    <h2 style="text-align: center;">Expense Tracker</h2>
 
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" ng-model="student.email" required>
-      <div class="error-message" ng-show="studentForm.email.$invalid && studentForm.email.$touched">
-        <span ng-show="studentForm.email.$error.email">Invalid email address.</span>
-        <span ng-show="studentForm.email.$error.required">Email is required.</span>
-      </div>
-      <br>
+    <!-- Left Side: Input Form -->
+    <div class="form-row">
+      <label for="transactionType">Transaction Type:</label>
+      <select id="transactionType" ng-model="expenseCtrl.transactionType">
+        <option value="income">Income</option>
+        <option value="expenditure">Expenditure</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="transactionDescription">Description:</label>
+      <input type="text" id="transactionDescription" ng-model="expenseCtrl.newTransaction.description">
+    </div>
+    <div class="form-row">
+      <label for="transactionAmount">Amount:</label>
+      <input type="number" id="transactionAmount" ng-model="expenseCtrl.newTransaction.amount">
+    </div>
+    <div class="form-row">
+      <button ng-click="expenseCtrl.addTransaction()">Add Transaction</button>
+    </div>
 
-      <label for="birthdate">Birth Date:</label>
-      <input type="date" id="birthdate" name="birthdate" ng-model="student.birthdate" required>
-      <div class="error-message" ng-show="studentForm.birthdate.$invalid && studentForm.birthdate.$touched">
-        <span ng-show="studentForm.birthdate.$error.required">Birth Date is required.</span>
+    <!-- Right Side: Display Dynamic Data -->
+    <div>
+      <h3>Transactions:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>SR No.</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="transaction in expenseCtrl.transactions">
+            <td>{{$index + 1}}</td>
+            <td>{{transaction.description}}</td>
+            <td>{{transaction.type}}</td>
+            <td>${{transaction.amount}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="balance-row">
+        <div class="balance-item">
+          <p>Total Income: ${{expenseCtrl.totalIncome}}</p>
+        </div>
+        <div class="balance-item">
+          <p>Total Expenditure: ${{expenseCtrl.totalExpenditure}}</p>
+        </div>
       </div>
-      <br>
+      <div class="balance-row">
+        <div style="text-align: center;">
+          <button ng-click="expenseCtrl.generateReport()">Generate Report</button>
+        </div>
 
-      <div class="gender-label">Gender:</div>
-      <div class="gender-options">
-        <label><input type="radio" name="gender" ng-model="student.gender" value="male" required> Male</label>
-        <label><input type="radio" name="gender" ng-model="student.gender" value="female" required> Female</label>
+
       </div>
-      <div class="error-message" ng-show="studentForm.gender.$invalid && studentForm.gender.$touched">
-        Gender is required.
-      </div>
-      <br>
-
-      <button ng-click="submitForm()" ng-disabled="studentForm.$invalid">Submit</button>
-      <button type="button" ng-click="clearForm()">Clear</button>
-    </form>
-
-    <div ng-show="submitted">
-      <h3>Student Details:</h3>
-      <p><strong>Name:</strong> {{ student.name }}</p>
-      <p><strong>Email:</strong> {{ student.email }}</p>
-      <p><strong>Birth Date:</strong> {{ student.birthdate }}</p>
-      <p><strong>Gender:</strong> {{ student.gender }}</p>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
   <script>
-    var app = angular.module('studentApp', []);
+    angular.module('expenseTrackerApp', [])
+      .controller('ExpenseController', function () {
+        var vm = this;
+        vm.transactions = [];
+        vm.totalIncome = 0;
+        vm.totalExpenditure = 0;
+        vm.balance = 0;
 
-    app.controller('studentController', function($scope) {
-      $scope.student = {};
-      $scope.submitted = false;
+        vm.newTransaction = {
+          description: '',
+          amount: ''
+        };
 
-      $scope.submitForm = function() {
-        $scope.submitted = true;
-        alert("Form submitted successfully!");
-      };
+        vm.addTransaction = function () {
+          if (vm.newTransaction.description && vm.newTransaction.amount) {
+            if (vm.transactionType === 'income') {
+              vm.totalIncome += parseFloat(vm.newTransaction.amount);
+              vm.balance += parseFloat(vm.newTransaction.amount);
+            } else if (vm.transactionType === 'expenditure') {
+              vm.totalExpenditure += parseFloat(vm.newTransaction.amount);
+              vm.balance -= parseFloat(vm.newTransaction.amount);
+            }
+            vm.transactions.push({
+              description: vm.newTransaction.description,
+              amount: vm.newTransaction.amount,
+              type: vm.transactionType
+            });
+            // Clear input fields after adding transaction
+            vm.newTransaction.description = '';
+            vm.newTransaction.amount = '';
+          } else {
+            alert('Please enter both description and amount.');
+          }
+        };
 
-      $scope.clearForm = function() {
-        $scope.student = {};
-        $scope.submitted = false;
-        $scope.studentForm.$setPristine();
-        $scope.studentForm.$setUntouched();
-      };
-    });
+        vm.generateBill = function () {
+          var billMessage = 'Bill Details:\n';
+          vm.transactions.forEach(function (transaction, index) {
+            billMessage += (index + 1) + '. ';
+            billMessage += transaction.description + ' - ' + transaction.type + ' - $' + transaction.amount + '\n';
+          });
+          billMessage += 'Total Income: $' + vm.totalIncome + '\n';
+          billMessage += 'Total Expenditure: $' + vm.totalExpenditure + '\n';
+          billMessage += 'Total Balance: $' + vm.balance;
+          alert(billMessage);
+        };
+        vm.generateReport = function () {
+          var reportMessage = 'Report:\n';
+          vm.transactions.forEach(function (transaction, index) {
+            reportMessage += (index + 1) + '. ';
+            reportMessage += transaction.description + ' - ' + transaction.type + ' - $' + transaction.amount + '\n';
+          });
+          reportMessage += 'Total Income: $' + vm.totalIncome + '\n';
+          reportMessage += 'Total Expenditure: $' + vm.totalExpenditure + '\n';
+          reportMessage += 'Total Balance: $' + vm.balance;
+          alert(reportMessage);
+        };
+      });
   </script>
 
 </body>
